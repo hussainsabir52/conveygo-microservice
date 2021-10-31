@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-  PORT: process.env.PORT ?? 5007,
+  PORT: process.env.PORT,
   MYSQL: {
     HOST: process.env.MYSQL_HOST ?? throwMissing('MYSQL_HOST'),
     DATABASE: process.env.MYSQL_DATABASE ?? throwMissing('MYSQL_DATABASE'),
