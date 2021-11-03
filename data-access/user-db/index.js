@@ -1,11 +1,15 @@
 const {
     listUsers,
-    addUsers
+    getUser,
+    signUp,
+    userLogin
 } = require('./mysql/index')
 
 const userDB = {
     listUsers,
-    addUsers
+    getUser,
+    signUp,
+    userLogin
 }
 
 module.exports = userDB;

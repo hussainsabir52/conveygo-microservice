@@ -11,7 +11,7 @@ const cors = require('cors');
 app.use(cors());
 
 const config = require('../../config/index');
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 app.use(routes);
