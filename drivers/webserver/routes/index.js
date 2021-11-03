@@ -4,6 +4,9 @@ const users = require('./user')
 
 router
     .get("/v1/users", users.index)
-    .post("/v1/users", users.add)
+    .get("/v1/user/:id", users.get)
+    .post("/v1/login", users.login)
+    .post("/v1/users", users.signUp)
+
 
 module.exports = router;
