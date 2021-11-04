@@ -2,14 +2,18 @@ const {
     listUsers,
     getUser,
     signUp,
-    userLogin
+    userLogin,
+    emailVerification,
+    confirmEmailVerification
 } = require('./mysql/index')
 
 const userDB = {
     listUsers,
     getUser,
     signUp,
-    userLogin
+    userLogin,
+    emailVerification,
+    confirmEmailVerification
 }
 
 module.exports = userDB;

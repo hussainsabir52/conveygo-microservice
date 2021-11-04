@@ -25,3 +25,15 @@ users.login = (req, res) => {
         res.send(data);
     });
 };
+
+users.verifyemail = (req, res) => {
+    userDB.emailVerification(req.body).then((data) => {
+        res.send(data);
+    })
+}
+
+users.confirmemail = (req, res) => {
+    userDB.confirmEmailVerification(req.body).then((data) => {
+        res.send(data);
+    })
+}
