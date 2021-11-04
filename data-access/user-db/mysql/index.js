@@ -5,7 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const constants = require('../../../constants');
 const vc = require('../../../utils/verificationCode');
-const mail = require('../../../utils/mail')
+const nodemailer = require('nodemailer');
+const config = require("../../../config");
 
 /*
 objective: function to get all users
@@ -46,6 +47,7 @@ async function signUp(userPayload) {
     const hashPassword = await bcrypt.hash(user.password, 10);
     user.password = hashPassword;
     user.creationDate = new Date();
+    user.isEmailVerified = 0;
     const emailCheckQuery = 'SELECT * FROM user WHERE email = ?;';
     const emailResult = await helper.runQuery(emailCheckQuery, user.email);
     if (emailResult.length > 0)
@@ -109,8 +111,54 @@ async function userLogin(userPayload) {
 
 }
 
-async function emailVerification(email) {
+/*
+objective: function to send verification code using email
+Input: user email
+Output: verification code
+description: after query execution it will Send the data to serializer
+*/
 
+async function emailVerification(payload) {
+    const { email } = payload;
+    var transporter = nodemailer.createTransport({
+        service: config.MAIL.SERVICE,
+        auth: {
+            user: config.MAIL.EMAIL,
+            pass: config.MAIL.PASSWORD
+        }
+    });
+    const code = vc.authCode(10);
+    var mailOptions = {
+        from: config.MAIL.EMAIL,
+        to: email,
+        subject: config.MAIL.EMAIL_CONFIRMATION_SUBJECT,
+        text: `Your Giro Mobile App Verification Code is: ${code}`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Verification Email sent: ' + info.response);
+        }
+    });
+
+    return {
+        code
+    }
+}
+
+async function confirmEmailVerification(payload) {
+    const { email } = payload;
+
+    const query = 'update user set isEmailVerified=1 where email=?';
+
+    const result = await helper.runQuerySingle(query, email);
+
+    return {
+        Message: "Email Successfully Verified",
+        verification: true,
+    }
 }
 
 
@@ -119,5 +167,7 @@ module.exports = {
     listUsers,
     getUser,
     signUp,
-    userLogin
+    userLogin,
+    emailVerification,
+    confirmEmailVerification
 }

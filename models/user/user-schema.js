@@ -15,7 +15,7 @@ module.exports = Joi.object().keys({
     mobile: Joi.string().required(),
     password: Joi.string().required(),
     creationDate: Joi.string().required(),
-    imageURL: Joi.string().optional(),
+    // imageURL: Joi.string().optional(),
     isEmailVerified: Joi.number().required(),
     type: Joi.number().required()
 
