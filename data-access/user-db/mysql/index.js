@@ -46,8 +46,6 @@ async function signUp(userPayload) {
     SET ?";
     const hashPassword = await bcrypt.hash(user.password, 10);
     user.password = hashPassword;
-    user.creationDate = new Date();
-    user.isEmailVerified = 0;
     const emailCheckQuery = 'SELECT * FROM user WHERE email = ?;';
     const emailResult = await helper.runQuery(emailCheckQuery, user.email);
     if (emailResult.length > 0)
