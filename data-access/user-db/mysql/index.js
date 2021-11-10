@@ -74,7 +74,7 @@ async function userLogin(userPayload) {
         throw helper.conflict('The email is incorrect.');
     }
     console.log(password, result.password);
-    const checkPass = bcrypt.compare(password, result.password);
+    const checkPass = await bcrypt.compare(password, result.password);
     console.log(checkPass);
     if (!checkPass) {
         throw helper.conflict('The password is incorrect');
