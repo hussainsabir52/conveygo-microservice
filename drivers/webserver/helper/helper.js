@@ -21,8 +21,6 @@ function MMDDYYYYStringFromDate(date) {
 function newError(message, statusCode) {
   const err = new Error(message);
   err.statusCode = statusCode;
-  err.message = message;
-  console.log(err);
   return err;
 }
 
@@ -35,6 +33,7 @@ function notFound(message) {
 }
 
 function conflict(message) {
+  console.log(newError(message, 409));
   return newError(message, 409);
 }
 
