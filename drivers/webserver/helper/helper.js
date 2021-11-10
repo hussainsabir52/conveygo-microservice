@@ -33,7 +33,6 @@ function notFound(message) {
 }
 
 function conflict(message) {
-  console.log(newError(message, 409));
   return newError(message, 409);
 }
 

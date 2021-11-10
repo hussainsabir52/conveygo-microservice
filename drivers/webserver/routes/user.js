@@ -27,7 +27,7 @@ users.login = async (req, res, next) => {
         res.send(data);
     }
     catch (err) {
-        next(err);
+        console.log(err);
     }
 };
 
