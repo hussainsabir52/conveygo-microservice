@@ -20,10 +20,14 @@ users.signUp = (req, res, next) => {
     }).catch(next);
 };
 
-users.login = (req, res, next) => {
-    userDB.userLogin(req.body).then((data) => {
+users.login = async (req, res, next) => {
+    try {
+        const data = await userDB.userLogin(req.body);
         res.send(data);
-    }).catch(next);
+    }
+    catch (err) {
+        next(err);
+    }
 };
 
 users.verifyemail = (req, res, next) => {
