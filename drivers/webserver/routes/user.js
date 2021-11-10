@@ -23,6 +23,7 @@ users.signUp = (req, res, next) => {
 users.login = async (req, res, next) => {
     try {
         const data = await userDB.userLogin(req.body);
+        console.log(data);
         res.send(data);
     }
     catch (err) {
