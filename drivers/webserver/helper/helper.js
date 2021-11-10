@@ -21,6 +21,7 @@ function MMDDYYYYStringFromDate(date) {
 function newError(message, statusCode) {
   const err = new Error(message);
   err.statusCode = statusCode;
+  err.message = message;
   console.log(err);
   return err;
 }
