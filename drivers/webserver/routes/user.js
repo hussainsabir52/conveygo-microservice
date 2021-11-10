@@ -23,7 +23,7 @@ users.signUp = (req, res, next) => {
 users.login = (req, res, next) => {
     userDB.userLogin(req.body).then((data) => {
         res.send(data);
-    }).catch(next);
+    }).catch((err) => { throw err; });
 };
 
 users.verifyemail = (req, res, next) => {
