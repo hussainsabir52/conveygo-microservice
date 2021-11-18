@@ -21,14 +21,19 @@ users.signUp = (req, res, next) => {
 };
 
 users.login = async (req, res, next) => {
-    try {
-        const data = await userDB.userLogin(req.body);
-        console.log(data);
+    userDB.userLogin(req.body).then((data) => {
         res.send(data);
-    }
-    catch (err) {
-        console.log(err);
-    }
+    }).catch((err) => {
+        res.status(500).json(err);
+    })
+    // try {
+    //     const data = await userDB.userLogin(req.body);
+    //     console.log(data);
+    //     res.send(data);
+    // }
+    // catch (err) {
+    //     console.log(err);
+    // }
 };
 
 users.verifyemail = (req, res, next) => {
