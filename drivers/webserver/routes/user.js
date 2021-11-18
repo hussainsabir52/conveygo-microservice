@@ -24,7 +24,7 @@ users.login = async (req, res, next) => {
     userDB.userLogin(req.body).then((data) => {
         res.send(data);
     }).catch((err) => {
-        res.json(err);
+        return err;
     })
 };
 
