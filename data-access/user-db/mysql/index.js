@@ -27,7 +27,7 @@ Output: user Info
 description: after query execution it will Send the data to serializer
 */
 async function getUser(userID) {
-    const selectQuery = "select * from user where userID=?";
+    const selectQuery = "select * from user where userID = ?";
     const result = await helper.runQuery(selectQuery, userID);
     return result;
 }
