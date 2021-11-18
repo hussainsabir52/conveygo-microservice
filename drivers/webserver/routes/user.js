@@ -9,7 +9,7 @@ users.index = (req, res, next) => {
 };
 
 users.get = (req, res, next) => {
-    userDB.getUser().then((data) => {
+    userDB.getUser(req.params['id']).then((data) => {
         res.send(data);
     }).catch(next);
 };
