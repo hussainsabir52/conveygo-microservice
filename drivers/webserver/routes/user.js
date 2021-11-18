@@ -23,9 +23,7 @@ users.signUp = (req, res, next) => {
 users.login = async (req, res, next) => {
     userDB.userLogin(req.body).then((data) => {
         res.send(data);
-    }).catch((err) => {
-        return err;
-    })
+    }).catch(next)
 };
 
 users.verifyemail = (req, res, next) => {
