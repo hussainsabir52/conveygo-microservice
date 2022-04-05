@@ -40,16 +40,17 @@ Output: inserted user
 description: after query execution it will Send the data to serializer
 */
 async function signUp(userPayload) {
+    userPayload.isEmailVerified = 0;
     const user = await helper.validateUser(userPayload);
     const insertQuery = "INSERT \
     INTO user \
     SET ?";
     const hashPassword = await bcrypt.hash(user.password, 10);
     user.password = hashPassword;
-    const emailCheckQuery = 'SELECT * FROM user WHERE email = ?;';
-    const emailResult = await helper.runQuery(emailCheckQuery, user.email);
+    const emailCheckQuery = 'SELECT * FROM user WHERE email = ? or mobile=?;';
+    const emailResult = await helper.runQuery(emailCheckQuery, [user.email, user.mobile]);
     if (emailResult.length > 0)
-        throw helper.conflict('This email is already registered.');
+        throw helper.conflict('This email or mobile number is already registered.');
     const result = await helper.runQuery(insertQuery, user);
     return getUser(result.insertId);
 }
@@ -93,10 +94,6 @@ async function userLogin(userPayload) {
         creationDate: result.creationDate
     });
     if (result.isEmailVerified == 0) {
-        console.log({
-            Message: 'Not Verified',
-            userInfo: user
-        });
         return {
             Message: 'Not Verified',
             userInfo: user
