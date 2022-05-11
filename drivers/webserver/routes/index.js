@@ -9,5 +9,7 @@ router
     .post("/v1/signup", users.signUp)
     .post("/v1/verifyemail", users.verifyemail)
     .post("/v1/confirmemail", users.confirmemail)
+    .get("/v1/locations", users.getLocations)
+    .post("/v1/ride-now", users.rideNow)
 
 module.exports = router;

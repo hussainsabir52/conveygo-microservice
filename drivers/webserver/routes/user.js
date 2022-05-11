@@ -37,3 +37,16 @@ users.confirmemail = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.getLocations = (req, res, next) => {
+    userDB.getLocations().then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.rideNow = (req, res, next) => {
+    console.log(req);
+    userDB.rideNow(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
