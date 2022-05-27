@@ -167,9 +167,10 @@ async function rideNow(payload) {
     const { user_id, to_location, from_location, fare } = payload;
     var query = `insert into ride_now set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}`;
     var result = await helper.runQuery(query);
+    const rideid = result.insertId;
     query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},1)`;
     result = await helper.runQuery(query);
-    return result;
+    return { rideId: rideid };
 }
 
 async function pingDriverLocation(payload) {
