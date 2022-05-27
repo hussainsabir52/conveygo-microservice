@@ -11,5 +11,8 @@ router
     .post("/v1/confirmemail", users.confirmemail)
     .get("/v1/locations", users.getLocations)
     .post("/v1/ride-now", users.rideNow)
+    .post("/v1/ping-driver-location", users.pingDriverLocation)
+    .post("/v1/get-rides", users.getRide)
+    .post("/v1/driver-signup", users.driverSignup)
 
 module.exports = router;

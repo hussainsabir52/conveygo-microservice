@@ -172,6 +172,84 @@ async function rideNow(payload) {
     return result;
 }
 
+async function pingDriverLocation(payload) {
+    const { driver_id, latitude, longitude } = payload;
+    const query = `update driver_location set latitude=${latitude}, longitude=${longitude} where driver_id=${driver_id}`;
+    const result = helper.runQuery(query);
+    return result;
+}
+
+async function getRide(payload) {
+    const { driver_id } = payload;
+    const query1 = `select latitude, longitude from driver_location where driver_id=${driver_id}`;
+    const query2 = `select 
+    rn.ride_id,
+    concat(u.firstName," ",u.middleName," ",u.lastName) as "userName" , 
+    rn.fare, rt.ride_type_name as "rideType", 
+    loc.address as "pickup", 
+    loc.latitude as "pickupLatitude",
+    loc.longitude as "pickupLongitude", 
+    loc1.address as "Dropoff", 
+    loc1.latitude as "dropoffLatitude",
+    loc1.longitude as "dropoffLongitude"
+    from ride_now as rn 
+    inner join ride_info as ri on ri.ride_id = rn.ride_id 
+    inner join ride_type as rt on rt.ride_type_id = ri.ride_type_id
+    inner join location as loc on rn.from_location=loc.locId
+    inner join location as loc1 on rn.to_location=loc1.locId
+    inner join user as u on u.userID = rn.user_id;`
+    var rides = [];
+    const result1 = await helper.runQuerySingle(query1);
+    const result2 = await helper.runQuery(query2);
+    console.log(result1);
+    console.log(result2);
+    let distances = [];
+    for (var i = 0; i < result2.length; i++) {
+        let lat1 = result1?.latitude;
+        let lat2 = result2[i]?.pickupLatitude;
+        let lon1 = result1?.longitude;
+        let lon2 = result2[i]?.pickupLongitude;
+        if ((lat1 == lat2) && (lon1 == lon2)) {
+            distances.push(0);
+        }
+        else {
+            var radlat1 = Math.PI * lat1 / 180;
+            var radlat2 = Math.PI * lat2 / 180;
+            var theta = lon1 - lon2;
+            var radtheta = Math.PI * theta / 180;
+            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+            if (dist > 1) {
+                dist = 1;
+            }
+            dist = Math.acos(dist);
+            dist = dist * 180 / Math.PI;
+            dist = dist * 60 * 1.1515;
+            dist = dist * 1.609344
+            distances.push(dist);
+            if (dist < 4) {
+                rides.push(result2[i]);
+            }
+        }
+    }
+    return { rides };
+}
+
+async function driverSignup(payload) {
+    let { name, contact, email, password } = payload;
+    const query = `select * from driver where email=?`;
+    const result1 = await helper.runQuery(query, email);
+    console.log(result1);
+    if (result1.length > 0) {
+        return { Message: "Already Registered", Error: 1 }
+    } else {
+        const hashPassword = await bcrypt.hash(password, 10);
+        password = hashPassword;
+        const query = `insert into driver(driver_name,email,password,contact_number) values(?,?,?,?)`;
+        const result = await helper.runQuery(query, [name, email, password, contact]);
+        return { Message: "Successfully Registered", driverID: result.insertId };
+    }
+}
+
 
 module.exports = {
     listUsers,
@@ -181,5 +259,8 @@ module.exports = {
     emailVerification,
     confirmEmailVerification,
     getLocations,
-    rideNow
+    rideNow,
+    pingDriverLocation,
+    getRide,
+    driverSignup
 }

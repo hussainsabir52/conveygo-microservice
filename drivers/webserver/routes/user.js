@@ -50,3 +50,21 @@ users.rideNow = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.pingDriverLocation = (req, res, next) => {
+    userDB.pingDriverLocation(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.getRide = (req, res, next) => {
+    userDB.getRide(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.driverSignup = (req, res, next) => {
+    userDB.driverSignup(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}

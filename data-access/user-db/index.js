@@ -6,7 +6,10 @@ const {
     emailVerification,
     confirmEmailVerification,
     getLocations,
-    rideNow
+    rideNow,
+    pingDriverLocation,
+    getRide,
+    driverSignup
 } = require('./mysql/index')
 
 const userDB = {
@@ -17,7 +20,10 @@ const userDB = {
     emailVerification,
     confirmEmailVerification,
     getLocations,
-    rideNow
+    rideNow,
+    pingDriverLocation,
+    getRide,
+    driverSignup
 }
 
 module.exports = userDB;
