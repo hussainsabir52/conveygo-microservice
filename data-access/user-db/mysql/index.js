@@ -175,8 +175,10 @@ async function rideNow(payload) {
 
 async function pingDriverLocation(payload) {
     const { driver_id, latitude, longitude } = payload;
-    const query = `update driver_location set latitude=${latitude}, longitude=${longitude} where driver_id=${driver_id}`;
-    const result = helper.runQuery(query);
+    const query1 = `delete from driver_location where driver_id=${driver_id}`;
+    await helper.runQuery(query1);
+    const query = `insert into driver_location set latitude=${latitude}, longitude=${longitude} where driver_id=${driver_id}`;
+    const result = await helper.runQuery(query);
     return result;
 }
 
