@@ -281,7 +281,9 @@ async function getRide(payload) {
     return { rides };
 }
 
-async function driverChangeFare()
+async function driverChangeFare() {
+
+}
 
 
 
