@@ -251,6 +251,28 @@ async function driverSignup(payload) {
     }
 }
 
+async function driverVehicleRegistration(payload) {
+    const { driverId, driverAddress, driverLicenseNumber, driverCnicNumber, vechicleType, vehicleNumber, regCity, regYear, modelYear, make, ownerName } = await payload;
+    const query = `select * from driver where driverID = ${driverId}`;
+    const driverInfo = await helper.runQuery(query);
+    if (driverInfo.length < 1) {
+        return { Message: "Driver Not Found", Error: 1 };
+    }
+    else {
+        try {
+            const query1 = `update driver set address=?, licenseNumber=?, cnicNumber=? where driverID=?`;
+            await helper.runQuery(query1, [driverAddress, driverLicenseNumber, driverCnicNumber, driverId]);
+            const query2 = `insert into vehicle(type,vehicleNumber,registration_city,registration_year, model_year,owner_name,make,driverID) values(?,?,?,?,?,?,?,?);`
+            const result = await helper.runQuery(query2, [vechicleType, vehicleNumber, regCity, regYear, modelYear, ownerName, make, driverId]);
+            if (result.insertId) {
+                return { Message: 'Driver Registered', Error: 0 };
+            }
+        } catch (err) {
+            return { Message: 'Error', Error: err };
+        }
+    }
+}
+
 
 module.exports = {
     listUsers,
@@ -263,5 +285,6 @@ module.exports = {
     rideNow,
     pingDriverLocation,
     getRide,
-    driverSignup
+    driverSignup,
+    driverVehicleRegistration
 }

@@ -68,3 +68,9 @@ users.driverSignup = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.driverVehicleRegistration = (req, res, next) => {
+    userDB.driverVehicleRegistration(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}

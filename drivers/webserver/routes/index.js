@@ -14,5 +14,6 @@ router
     .post("/v1/ping-driver-location", users.pingDriverLocation)
     .post("/v1/get-rides", users.getRide)
     .post("/v1/driver-signup", users.driverSignup)
+    .post("/v1/driver-register", users.driverVehicleRegistration)
 
 module.exports = router;
