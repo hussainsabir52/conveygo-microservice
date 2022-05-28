@@ -184,11 +184,13 @@ async function pingDriverLocation(payload) {
 
 async function getRide(payload) {
     const { driver_id } = payload;
+    const query0 = `select type from vehicle where driverID=${driver_id};`
     const query1 = `select latitude, longitude from driver_location where driver_id=${driver_id}`;
     const query2 = `select 
     rn.ride_id,
     concat(u.firstName," ",u.middleName," ",u.lastName) as "userName" , 
-    rn.fare, rt.ride_type_name as "rideType", 
+    rn.fare, rt.ride_type_name as "rideType",
+    rn.vehicle_type as type,    
     loc.address as "pickup", 
     loc.latitude as "pickupLatitude",
     loc.longitude as "pickupLongitude", 
@@ -202,6 +204,7 @@ async function getRide(payload) {
     inner join location as loc1 on rn.to_location=loc1.locId
     inner join user as u on u.userID = rn.user_id;`
     var rides = [];
+    const result0 = await helper.runQuerySingle(query0);
     const result1 = await helper.runQuerySingle(query1);
     const result2 = await helper.runQuery(query2);
     console.log(result1);
@@ -229,7 +232,8 @@ async function getRide(payload) {
             dist = dist * 60 * 1.1515;
             dist = dist * 1.609344
             distances.push(dist);
-            if (dist < 4) {
+            console.log(dist);
+            if (dist < 4 && result0?.type == result2[i]?.type) {
                 rides.push(result2[i]);
             }
         }
