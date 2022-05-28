@@ -164,8 +164,8 @@ async function getLocations() {
 
 async function rideNow(payload) {
     console.log(payload);
-    const { user_id, to_location, from_location, fare } = payload;
-    var query = `insert into ride_now set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}`;
+    const { user_id, to_location, from_location, fare, vehicle_type } = payload;
+    var query = `insert into ride_now set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}, vehicle_type=${vehicle_type}`;
     var result = await helper.runQuery(query);
     const rideid = result.insertId;
     query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},1)`;
@@ -177,7 +177,7 @@ async function pingDriverLocation(payload) {
     const { driver_id, latitude, longitude } = payload;
     const query1 = `delete from driver_location where driver_id=${driver_id}`;
     await helper.runQuery(query1);
-    const query = `insert into driver_location set latitude=${latitude}, longitude=${longitude} where driver_id=${driver_id}`;
+    const query = `insert into driver_location set latitude=${latitude}, longitude=${longitude};`;
     const result = await helper.runQuery(query);
     return result;
 }
