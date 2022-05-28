@@ -156,6 +156,44 @@ async function confirmEmailVerification(payload) {
     }
 }
 
+async function driverSignup(payload) {
+    let { name, contact, email, password } = payload;
+    const query = `select * from driver where email=?`;
+    const result1 = await helper.runQuery(query, email);
+    console.log(result1);
+    if (result1.length > 0) {
+        return { Message: "Already Registered", Error: 1 }
+    } else {
+        const hashPassword = await bcrypt.hash(password, 10);
+        password = hashPassword;
+        const query = `insert into driver(driver_name,email,password,contact_number) values(?,?,?,?)`;
+        const result = await helper.runQuery(query, [name, email, password, contact]);
+        return { Message: "Successfully Registered", driverID: result.insertId };
+    }
+}
+
+async function driverVehicleRegistration(payload) {
+    const { driverId, driverAddress, driverLicenseNumber, driverCnicNumber, vechicleType, vehicleNumber, regCity, regYear, modelYear, make, ownerName } = await payload;
+    const query = `select * from driver where driverID = ${driverId}`;
+    const driverInfo = await helper.runQuery(query);
+    if (driverInfo.length < 1) {
+        return { Message: "Driver Not Found", Error: 1 };
+    }
+    else {
+        try {
+            const query1 = `update driver set address=?, licenseNumber=?, cnicNumber=? where driverID=?`;
+            await helper.runQuery(query1, [driverAddress, driverLicenseNumber, driverCnicNumber, driverId]);
+            const query2 = `insert into vehicle(type,vehicleNumber,registration_city,registration_year, model_year,owner_name,make,driverID) values(?,?,?,?,?,?,?,?);`
+            const result = await helper.runQuery(query2, [vechicleType, vehicleNumber, regCity, regYear, modelYear, ownerName, make, driverId]);
+            if (result.insertId) {
+                return { Message: 'Driver Registered', Error: 0 };
+            }
+        } catch (err) {
+            return { Message: 'Error', Error: err };
+        }
+    }
+}
+
 async function getLocations() {
     const query = "select * from location";
     const result = await helper.runQuery(query);
@@ -169,6 +207,8 @@ async function rideNow(payload) {
     var result = await helper.runQuery(query);
     const rideid = result.insertId;
     query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},1)`;
+    result = await helper.runQuery(query);
+    query = `insert into ride_negotiation set ride_info_id=${result.insertId}, user_fare=${fare}`;
     result = await helper.runQuery(query);
     return { rideId: rideid };
 }
@@ -241,43 +281,8 @@ async function getRide(payload) {
     return { rides };
 }
 
-async function driverSignup(payload) {
-    let { name, contact, email, password } = payload;
-    const query = `select * from driver where email=?`;
-    const result1 = await helper.runQuery(query, email);
-    console.log(result1);
-    if (result1.length > 0) {
-        return { Message: "Already Registered", Error: 1 }
-    } else {
-        const hashPassword = await bcrypt.hash(password, 10);
-        password = hashPassword;
-        const query = `insert into driver(driver_name,email,password,contact_number) values(?,?,?,?)`;
-        const result = await helper.runQuery(query, [name, email, password, contact]);
-        return { Message: "Successfully Registered", driverID: result.insertId };
-    }
-}
+async function driverChangeFare()
 
-async function driverVehicleRegistration(payload) {
-    const { driverId, driverAddress, driverLicenseNumber, driverCnicNumber, vechicleType, vehicleNumber, regCity, regYear, modelYear, make, ownerName } = await payload;
-    const query = `select * from driver where driverID = ${driverId}`;
-    const driverInfo = await helper.runQuery(query);
-    if (driverInfo.length < 1) {
-        return { Message: "Driver Not Found", Error: 1 };
-    }
-    else {
-        try {
-            const query1 = `update driver set address=?, licenseNumber=?, cnicNumber=? where driverID=?`;
-            await helper.runQuery(query1, [driverAddress, driverLicenseNumber, driverCnicNumber, driverId]);
-            const query2 = `insert into vehicle(type,vehicleNumber,registration_city,registration_year, model_year,owner_name,make,driverID) values(?,?,?,?,?,?,?,?);`
-            const result = await helper.runQuery(query2, [vechicleType, vehicleNumber, regCity, regYear, modelYear, ownerName, make, driverId]);
-            if (result.insertId) {
-                return { Message: 'Driver Registered', Error: 0 };
-            }
-        } catch (err) {
-            return { Message: 'Error', Error: err };
-        }
-    }
-}
 
 
 module.exports = {
