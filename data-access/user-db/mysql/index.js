@@ -208,8 +208,6 @@ async function rideNow(payload) {
     const rideid = result.insertId;
     query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},1)`;
     result = await helper.runQuery(query);
-    query = `insert into ride_negotiation set ride_info_id=${result.insertId}, user_fare=${fare}`;
-    result = await helper.runQuery(query);
     return { rideId: rideid };
 }
 
@@ -281,8 +279,36 @@ async function getRide(payload) {
     return { rides };
 }
 
-async function driverChangeFare() {
+async function driverChangeFare(payload) {
+    const { ride_id, driver_id, driver_fare } = payload;
+    const query = `select driver_id from ride_now where ride_id=${ride_id}`;
+    const rideNow = await helper.runQuerySingle(query);
+    if (rideNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id}`;
+        const ride_info = await helper.runQuerySingle(query);
+        const delQuery = `delete from ride_negotiation where driver_id=${driver_id} and ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(delQuery);
+        const query1 = `insert into ride_negotiation set driver_id=${driver_id}, driver_fare=${driver_fare}, ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0 };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
+    }
+}
 
+async function userChangeFare(payload) {
+    const { ride_id, user_fare } = payload;
+    const query = `select driver_id from ride_now where ride_id=${ride_id}`;
+    const rideNow = await helper.runQuerySingle(query);
+    if (rideNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id}`;
+        const ride_info = await helper.runQuerySingle(query);
+        const query1 = `update ride_negotiation set driver_id=${driver_id}, driver_fare=${driver_fare} where ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0 };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
+    }
 }
 
 
@@ -299,5 +325,6 @@ module.exports = {
     pingDriverLocation,
     getRide,
     driverSignup,
-    driverVehicleRegistration
+    driverVehicleRegistration,
+    driverChangeFare
 }

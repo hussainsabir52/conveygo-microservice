@@ -74,3 +74,9 @@ users.driverVehicleRegistration = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.driverChangeFare = (req, res, next) => {
+    userDB.driverChangeFare(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}

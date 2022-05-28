@@ -10,7 +10,8 @@ const {
     pingDriverLocation,
     getRide,
     driverSignup,
-    driverVehicleRegistration
+    driverVehicleRegistration,
+    driverChangeFare
 } = require('./mysql/index')
 
 const userDB = {
@@ -25,7 +26,8 @@ const userDB = {
     pingDriverLocation,
     getRide,
     driverSignup,
-    driverVehicleRegistration
+    driverVehicleRegistration,
+    driverChangeFare
 }
 
 module.exports = userDB;

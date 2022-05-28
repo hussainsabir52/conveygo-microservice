@@ -8,13 +8,15 @@ const express = require('express');
 const app = express();
 const routes = require('./routes');
 const cors = require('cors');
+const http = require('http');
 app.use(cors());
-
+let server = http.createServer(app)
 const config = require('../../config/index');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 app.use(routes);
+
 
 // === BOILERPLATE ===
 // Catch and send error messages
@@ -41,9 +43,10 @@ app.use(function (req, res) {
   });
 });
 
+
 const PORT = config.PORT;
 
 //starting the server
-app.listen(PORT, () => {
-  console.log(`Listening on PORT: ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server listening on PORT: ${PORT}`);
 });
