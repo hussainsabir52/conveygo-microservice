@@ -80,3 +80,16 @@ users.driverChangeFare = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.userChangeFare = (req, res, next) => {
+    userDB.userChangeFare(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+
+users.getDrivers = (req, res, next) => {
+    userDB.getDrivers(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}

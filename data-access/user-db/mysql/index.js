@@ -298,19 +298,31 @@ async function driverChangeFare(payload) {
 
 async function userChangeFare(payload) {
     const { ride_id, user_fare } = payload;
+    const query = `update ride_now set fare=${user_fare} where ride_id=${ride_id}`;
+    await helper.runQuerySingle(query);
+    return { Message: "Fare Updated", Error: 0 };
+}
+
+async function getDrivers(payload) {
+    const { ride_id } = payload;
     const query = `select driver_id from ride_now where ride_id=${ride_id}`;
     const rideNow = await helper.runQuerySingle(query);
     if (rideNow?.driver_id === null) {
         const query = `select ride_info_id from ride_info where ride_id = ${ride_id}`;
         const ride_info = await helper.runQuerySingle(query);
-        const query1 = `update ride_negotiation set driver_id=${driver_id}, driver_fare=${driver_fare} where ride_info_id=${ride_info.ride_info_id}`;
-        await helper.runQuery(query1);
-        return { Message: "Fare Updated", Error: 0 };
+        const query1 = `select 
+        vehicle.* , 
+        driver.*, 
+        ride_negotiation.driver_fare from vehicle 
+        inner join driver on vehicle.driverID = driver.driverID 
+        inner join ride_negotiation on ride_negotiation.driver_id=driver.driverID 
+        where ride_negotiation.ride_info_id= ${ride_info.ride_info_id};`;
+        const result = await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0, drivers: result };
     } else {
         return { Message: "Ride Already Accepted", Error: 1 };
     }
 }
-
 
 
 module.exports = {
@@ -326,5 +338,7 @@ module.exports = {
     getRide,
     driverSignup,
     driverVehicleRegistration,
-    driverChangeFare
+    driverChangeFare,
+    userChangeFare,
+    getDrivers
 }
