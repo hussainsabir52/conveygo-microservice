@@ -18,5 +18,6 @@ router
     .post("/v1/driver-fare", users.driverChangeFare)
     .post("/v1/user-fare", users.userChangeFare)
     .post("/v1/get-drivers", users.getDrivers)
+    .post("/v1/accept-ride-user", users.acceptUserRideNow)
 
 module.exports = router;

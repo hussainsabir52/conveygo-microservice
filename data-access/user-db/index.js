@@ -13,7 +13,8 @@ const {
     driverVehicleRegistration,
     driverChangeFare,
     userChangeFare,
-    getDrivers
+    getDrivers,
+    acceptUserRideNow
 } = require('./mysql/index')
 
 const userDB = {
@@ -31,7 +32,8 @@ const userDB = {
     driverVehicleRegistration,
     driverChangeFare,
     userChangeFare,
-    getDrivers
+    getDrivers,
+    acceptUserRideNow
 }
 
 module.exports = userDB;

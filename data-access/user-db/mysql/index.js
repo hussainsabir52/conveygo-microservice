@@ -324,6 +324,12 @@ async function getDrivers(payload) {
     }
 }
 
+async function acceptUserRideNow(payload) {
+    const { driver_id, ride_id, fare } = payload;
+    const query = `update ride_now set driver_id =${driver_id} and isAccepted=1 and fare=${fare} where ride_id=${ride_id}`;
+    await helper.runQuery(query);
+    return { Message: "Ride Accepted", Error: 0 };
+}
 
 module.exports = {
     listUsers,
@@ -340,5 +346,6 @@ module.exports = {
     driverVehicleRegistration,
     driverChangeFare,
     userChangeFare,
-    getDrivers
+    getDrivers,
+    acceptUserRideNow
 }

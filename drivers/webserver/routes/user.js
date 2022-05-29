@@ -93,3 +93,9 @@ users.getDrivers = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.acceptUserRideNow = (req, res, next) => {
+    userDB.acceptUserRideNow(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
