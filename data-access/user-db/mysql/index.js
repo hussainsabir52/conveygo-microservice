@@ -398,9 +398,9 @@ async function monthlyBooking(payload) {
     return { rideId: rideid };
 }
 
-async function acceptUserMonthly(payload) {
+async function acceptUserDelivery(payload) {
     const { driver_id, ride_id, fare } = payload;
-    const query = `update monthly_booking set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
+    const query = `update deliver_now set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
     await helper.runQuery(query);
     return { Message: "Ride Accepted", Error: 0 };
 }
@@ -479,7 +479,6 @@ module.exports = {
     userChangeFareDelivery,
     getDriversDelivery,
     acceptUserDelivery,
-    acceptUserMonthly,
     monthlyBooking,
     driverChangeFareMonthly,
     userChangeFareMonthly,
