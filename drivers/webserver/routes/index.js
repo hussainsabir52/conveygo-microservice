@@ -19,5 +19,6 @@ router
     .post("/v1/user-fare", users.userChangeFare)
     .post("/v1/get-drivers", users.getDrivers)
     .post("/v1/accept-ride-user", users.acceptUserRideNow)
+    .post("/v1/deliver-now", users.deliverNow)
 
 module.exports = router;

@@ -99,3 +99,9 @@ users.acceptUserRideNow = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+
+users.deliverNow = (req, res, next) => {
+    userDB.deliverNow(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
