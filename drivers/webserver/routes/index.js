@@ -23,6 +23,11 @@ router
     .post("/v1/driver-fare-delivery", users.driverChangeFareDelivery)
     .post("/v1/user-fare-delivery", users.userChangeFareDelivery)
     .post("/v1/get-drivers-delivery", users.getDriversDelivery)
-    .post("/v1/accept-ride-user-delivery", users.acceptUserRideNowDelivery)
+    .post("/v1/accept-ride-user-delivery", users.acceptUserDelivery)
+    .post("/v1/monthly-booking", users.monthlyBooking)
+    .post("/v1/driver-fare-monthly", users.driverChangeFareMonthly)
+    .post("/v1/user-fare-monthly", users.userChangeFareMonthly)
+    .post("/v1/get-drivers-monthly", users.getDriversMonthly)
+    .post("/v1/accept-ride-user-monthly", users.acceptUserMonthly)
 
 module.exports = router;

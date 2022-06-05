@@ -123,8 +123,37 @@ users.getDriversDelivery = (req, res, next) => {
     }).catch(next);
 }
 
-users.acceptUserRideNowDelivery = (req, res, next) => {
-    userDB.acceptUserRideNowDelivery(req.body).then((data) => {
+users.acceptUserDelivery = (req, res, next) => {
+    userDB.acceptUserDelivery(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.monthlyBooking = (req, res, next) => {
+    userDB.monthlyBooking(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+users.driverChangeFareMonthly = (req, res, next) => {
+    userDB.driverChangeFareMonthly(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.userChangeFareMonthly = (req, res, next) => {
+    userDB.userChangeFareMonthly(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.getDriversMonthly = (req, res, next) => {
+    userDB.getDriversMonthly(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.acceptUserMonthly = (req, res, next) => {
+    userDB.acceptUserMonthly(req.body).then((data) => {
         res.send(data);
     }).catch(next);
 }

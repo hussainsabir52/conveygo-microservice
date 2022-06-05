@@ -387,9 +387,72 @@ async function getDriversDelivery(payload) {
     }
 }
 
-async function acceptUserRideNowDelivery(payload) {
+async function monthlyBooking(payload) {
+    console.log(payload);
+    const { user_id, to_location, from_location, fare, vehicle_type, start_date, end_date, time } = payload;
+    var query = `insert into deliver_now set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}, vehicle_type=${vehicle_type}, start_date=${start_date}, end_date=${end_date}, time=${time}`;
+    var result = await helper.runQuery(query);
+    const rideid = result.insertId;
+    query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},3)`;
+    result = await helper.runQuery(query);
+    return { rideId: rideid };
+}
+
+async function acceptUserMonthly(payload) {
     const { driver_id, ride_id, fare } = payload;
-    const query = `update deliver_now set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
+    const query = `update monthly_booking set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
+    await helper.runQuery(query);
+    return { Message: "Ride Accepted", Error: 0 };
+}
+
+async function driverChangeFareMonthly(payload) {
+    const { ride_id, driver_id, driver_fare } = payload;
+    const query = `select driver_id from monthly_booking where ride_id=${ride_id}`;
+    const deliverNow = await helper.runQuerySingle(query);
+    if (deliverNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id} and ride_type_id=3`;
+        const ride_info = await helper.runQuerySingle(query);
+        const delQuery = `delete from ride_negotiation where driver_id=${driver_id} and ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(delQuery);
+        const query1 = `insert into ride_negotiation set driver_id=${driver_id}, driver_fare=${driver_fare}, ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0 };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
+    }
+}
+
+async function userChangeFareMonthly(payload) {
+    const { ride_id, user_fare } = payload;
+    const query = `update monthly_booking set fare=${user_fare} where ride_id=${ride_id}`;
+    await helper.runQuerySingle(query);
+    return { Message: "Fare Updated", Error: 0 };
+}
+
+async function getDriversMonthly(payload) {
+    const { ride_id } = payload;
+    const query = `select driver_id from monthly_booking where ride_id=${ride_id}`;
+    const deliverNow = await helper.runQuerySingle(query);
+    if (deliverNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id} and ride_type_id=3`;
+        const ride_info = await helper.runQuerySingle(query);
+        const query1 = `select 
+        vehicle.* , 
+        driver.*, 
+        ride_negotiation.driver_fare from vehicle 
+        inner join driver on vehicle.driverID = driver.driverID 
+        inner join ride_negotiation on ride_negotiation.driver_id=driver.driverID 
+        where ride_negotiation.ride_info_id= ${ride_info.ride_info_id};`;
+        const result = await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0, drivers: result };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
+    }
+}
+
+async function acceptUserMonthly(payload) {
+    const { driver_id, ride_id, fare } = payload;
+    const query = `update monthly_booking set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
     await helper.runQuery(query);
     return { Message: "Ride Accepted", Error: 0 };
 }
@@ -415,5 +478,11 @@ module.exports = {
     driverChangeFareDelivery,
     userChangeFareDelivery,
     getDriversDelivery,
-    acceptUserRideNowDelivery
+    acceptUserDelivery,
+    acceptUserMonthly,
+    monthlyBooking,
+    driverChangeFareMonthly,
+    userChangeFareMonthly,
+    getDriversMonthly,
+    acceptUserMonthly
 }
