@@ -105,3 +105,26 @@ users.deliverNow = (req, res, next) => {
         res.send(data);
     }).catch(next);
 }
+users.driverChangeFareDelivery = (req, res, next) => {
+    userDB.driverChangeFareDelivery(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.userChangeFareDelivery = (req, res, next) => {
+    userDB.userChangeFareDelivery(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.getDriversDelivery = (req, res, next) => {
+    userDB.getDriversDelivery(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}
+
+users.acceptUserRideNowDelivery = (req, res, next) => {
+    userDB.acceptUserRideNowDelivery(req.body).then((data) => {
+        res.send(data);
+    }).catch(next);
+}

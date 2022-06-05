@@ -20,5 +20,9 @@ router
     .post("/v1/get-drivers", users.getDrivers)
     .post("/v1/accept-ride-user", users.acceptUserRideNow)
     .post("/v1/deliver-now", users.deliverNow)
+    .post("/v1/driver-fare-delivery", users.driverChangeFareDelivery)
+    .post("/v1/user-fare-delivery", users.userChangeFareDelivery)
+    .post("/v1/get-drivers-delivery", users.getDriversDelivery)
+    .post("/v1/accept-ride-user-delivery", users.acceptUserRideNowDelivery)
 
 module.exports = router;

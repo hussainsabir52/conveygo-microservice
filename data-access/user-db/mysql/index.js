@@ -284,7 +284,7 @@ async function driverChangeFare(payload) {
     const query = `select driver_id from ride_now where ride_id=${ride_id}`;
     const rideNow = await helper.runQuerySingle(query);
     if (rideNow?.driver_id === null) {
-        const query = `select ride_info_id from ride_info where ride_id = ${ride_id}`;
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id} and ride_type_id=1`;
         const ride_info = await helper.runQuerySingle(query);
         const delQuery = `delete from ride_negotiation where driver_id=${driver_id} and ride_info_id=${ride_info.ride_info_id}`;
         await helper.runQuery(delQuery);
@@ -342,63 +342,56 @@ async function deliverNow(payload) {
     return { rideId: rideid };
 }
 
-async function getDelivery(payload) {
-    const { driver_id } = payload;
-    const query0 = `select type from vehicle where driverID=${driver_id};`
-    const query1 = `select latitude, longitude from driver_location where driver_id=${driver_id}`;
-    const query2 = `select 
-    rn.ride_id,
-    concat(u.firstName," ",u.middleName," ",u.lastName) as "userName" , 
-    rn.fare, rt.ride_type_name as "rideType",
-    rn.vehicle_type as type,    
-    loc.address as "pickup", 
-    loc.latitude as "pickupLatitude",
-    loc.longitude as "pickupLongitude", 
-    loc1.address as "Dropoff", 
-    loc1.latitude as "dropoffLatitude",
-    loc1.longitude as "dropoffLongitude"
-    from deliver_now as rn 
-    inner join ride_info as ri on ri.ride_id = rn.ride_id 
-    inner join ride_type as rt on rt.ride_type_id = ri.ride_type_id
-    inner join location as loc on rn.from_location=loc.locId
-    inner join location as loc1 on rn.to_location=loc1.locId
-    inner join user as u on u.userID = rn.user_id;`
-    var rides = [];
-    const result0 = await helper.runQuerySingle(query0);
-    const result1 = await helper.runQuerySingle(query1);
-    const result2 = await helper.runQuery(query2);
-    console.log(result1);
-    console.log(result2);
-    let distances = [];
-    for (var i = 0; i < result2.length; i++) {
-        let lat1 = result1?.latitude;
-        let lat2 = result2[i]?.pickupLatitude;
-        let lon1 = result1?.longitude;
-        let lon2 = result2[i]?.pickupLongitude;
-        if ((lat1 == lat2) && (lon1 == lon2)) {
-            distances.push(0);
-        }
-        else {
-            var radlat1 = Math.PI * lat1 / 180;
-            var radlat2 = Math.PI * lat2 / 180;
-            var theta = lon1 - lon2;
-            var radtheta = Math.PI * theta / 180;
-            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-            if (dist > 1) {
-                dist = 1;
-            }
-            dist = Math.acos(dist);
-            dist = dist * 180 / Math.PI;
-            dist = dist * 60 * 1.1515;
-            dist = dist * 1.609344
-            distances.push(dist);
-            console.log(dist);
-            if (dist < 4 && result0?.type == result2[i]?.type) {
-                rides.push(result2[i]);
-            }
-        }
+async function driverChangeFareDelivery(payload) {
+    const { ride_id, driver_id, driver_fare } = payload;
+    const query = `select driver_id from deliver_now where ride_id=${ride_id}`;
+    const deliverNow = await helper.runQuerySingle(query);
+    if (deliverNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id} and ride_type_id=2`;
+        const ride_info = await helper.runQuerySingle(query);
+        const delQuery = `delete from ride_negotiation where driver_id=${driver_id} and ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(delQuery);
+        const query1 = `insert into ride_negotiation set driver_id=${driver_id}, driver_fare=${driver_fare}, ride_info_id=${ride_info.ride_info_id}`;
+        await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0 };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
     }
-    return { rides };
+}
+
+async function userChangeFareDelivery(payload) {
+    const { ride_id, user_fare } = payload;
+    const query = `update deliver_now set fare=${user_fare} where ride_id=${ride_id}`;
+    await helper.runQuerySingle(query);
+    return { Message: "Fare Updated", Error: 0 };
+}
+
+async function getDriversDelivery(payload) {
+    const { ride_id } = payload;
+    const query = `select driver_id from deliver_now where ride_id=${ride_id}`;
+    const deliverNow = await helper.runQuerySingle(query);
+    if (deliverNow?.driver_id === null) {
+        const query = `select ride_info_id from ride_info where ride_id = ${ride_id} and ride_type_id=2`;
+        const ride_info = await helper.runQuerySingle(query);
+        const query1 = `select 
+        vehicle.* , 
+        driver.*, 
+        ride_negotiation.driver_fare from vehicle 
+        inner join driver on vehicle.driverID = driver.driverID 
+        inner join ride_negotiation on ride_negotiation.driver_id=driver.driverID 
+        where ride_negotiation.ride_info_id= ${ride_info.ride_info_id};`;
+        const result = await helper.runQuery(query1);
+        return { Message: "Fare Updated", Error: 0, drivers: result };
+    } else {
+        return { Message: "Ride Already Accepted", Error: 1 };
+    }
+}
+
+async function acceptUserRideNowDelivery(payload) {
+    const { driver_id, ride_id, fare } = payload;
+    const query = `update deliver_now set driver_id =${driver_id}, isAccepted=1, fare=${fare} where ride_id=${ride_id}`;
+    await helper.runQuery(query);
+    return { Message: "Ride Accepted", Error: 0 };
 }
 
 module.exports = {
@@ -418,5 +411,9 @@ module.exports = {
     userChangeFare,
     getDrivers,
     acceptUserRideNow,
-    deliverNow
+    deliverNow,
+    driverChangeFareDelivery,
+    userChangeFareDelivery,
+    getDriversDelivery,
+    acceptUserRideNowDelivery
 }
