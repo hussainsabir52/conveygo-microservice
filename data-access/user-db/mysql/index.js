@@ -390,7 +390,7 @@ async function getDriversDelivery(payload) {
 async function monthlyBooking(payload) {
     console.log(payload);
     const { user_id, to_location, from_location, fare, vehicle_type, start_date, end_date, time } = payload;
-    var query = `insert into deliver_now set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}, vehicle_type=${vehicle_type}, start_date=${start_date}, end_date=${end_date}, time=${time}`;
+    var query = `insert into monthly_booking set user_id=${user_id} ,to_location=${to_location} ,from_location=${from_location},fare=${fare}, vehicle_type=${vehicle_type}, start_date=${start_date}, end_date=${end_date}, time=${time}`;
     var result = await helper.runQuery(query);
     const rideid = result.insertId;
     query = `insert into ride_info(ride_id,ride_type_id) values(${result.insertId},3)`;
